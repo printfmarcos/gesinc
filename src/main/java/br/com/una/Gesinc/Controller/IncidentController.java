@@ -1,10 +1,13 @@
 package br.com.una.Gesinc.Controller;
 
 import br.com.una.Gesinc.Domain.Incident;
+import br.com.una.Gesinc.Domain.User;
 import br.com.una.Gesinc.Dto.IncidentDto;
+import br.com.una.Gesinc.Enum.TypeUser;
 import br.com.una.Gesinc.Form.IncidentForm;
 import br.com.una.Gesinc.Repository.IncidentRepository;
 import br.com.una.Gesinc.Repository.UserRepository;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -90,6 +93,24 @@ public class IncidentController {
             Incident incident = incidentForm.update(incidentOptional.get(), userRepository);
             incidentRepository.save(incident);
             return ResponseEntity.ok(new IncidentDto(incidentOptional.get()));
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @DeleteMapping("/{userId}/{incidentId}")
+    @Transactional
+    @CacheEvict(value = "incidentList", allEntries = true)
+    public ResponseEntity<?> delete (@PathVariable Long userId, @PathVariable Long incidentId){
+
+        Boolean isAdm = userRepository.getById(userId).getTypeUser() == TypeUser.ADM;
+        Optional<Incident> optionalIncident = incidentRepository.findById(incidentId);
+
+        if(isAdm == false){
+            return ResponseEntity.badRequest().body("Only ADM can delete an incident");
+        }
+        if (optionalIncident.isPresent()) {
+            incidentRepository.deleteById(incidentId);
+            return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();
     }
