@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.transaction.Transactional;
-import javax.validation.Valid;
 import java.net.URI;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/incident")
@@ -30,6 +30,10 @@ public class IncidentController {
     @Autowired
     private UserRepository userRepository;
 
+    /*
+    * Sem parametro : Retorna a lista de todos os incidentes cadastrados
+    * Com parametro:  Retorna a lista de todos os incidentes abertos por este solicitante
+    * */
     @GetMapping
     @Cacheable(value = "incidentList")
     public Page<IncidentDto> list(@RequestParam(required = false) Long userId,
@@ -45,28 +49,48 @@ public class IncidentController {
         return IncidentDto.convertToDto(incidents);
     }
 
+    /*
+    * Cadastro de um novo incidente*/
     @PostMapping
     @Transactional
+    @CacheEvict(value = "incidentList", allEntries = true)
     public ResponseEntity<IncidentDto> register (@RequestBody IncidentForm incidentForm, UriComponentsBuilder uriBuilder){
 
-        System.out.println(incidentForm.getAttendant());
-        System.out.println(incidentForm.getRequester());
-        System.out.println(incidentForm.getDescription());
-        System.out.println(incidentForm.getPriority());
-        System.out.println("--------------- dados do form passando corretamete------------");
-
         Incident incident = incidentForm.convertToEntity(userRepository);
-
         incidentRepository.save(incident);
 
-        System.out.println("--------------- dados do incidente novo cadastrado corretamente------------");
-        System.out.println(incident);
-
         URI uri = uriBuilder.path("/incident/{id}").buildAndExpand(incident.getId()).toUri();
-
         return ResponseEntity.created(uri).body(new IncidentDto(incident));
 
-//        return ResponseEntity.ok(new IncidentDto(incident));
+    }
 
+    /*
+    * Retorna um unico incidente de acordo com o Id passado*/
+    @GetMapping("/{id}")
+    public ResponseEntity<IncidentDto> detalhar(@PathVariable Long id) {
+        Optional<Incident> incidentOptional = incidentRepository.findById(id);
+
+        if (incidentOptional.isPresent()) {
+            return ResponseEntity.ok(new IncidentDto(incidentOptional.get()));
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    /*
+    * Atualiza o incidente do Id passado por parametro*/
+    @PutMapping("/{id}")
+    @Transactional
+    @CacheEvict(value = "incidentList", allEntries = true)
+    public ResponseEntity<IncidentDto> update (@RequestBody IncidentForm incidentForm, @PathVariable Long id){
+
+        Optional<Incident> incidentOptional = incidentRepository.findById(id);
+
+        if (incidentOptional.isPresent()) {
+
+            Incident incident = incidentForm.update(incidentOptional.get(), userRepository);
+            incidentRepository.save(incident);
+            return ResponseEntity.ok(new IncidentDto(incidentOptional.get()));
+        }
+        return ResponseEntity.notFound().build();
     }
 }

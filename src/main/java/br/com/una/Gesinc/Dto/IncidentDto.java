@@ -40,13 +40,16 @@ public class IncidentDto {
         this.requester = new UserDto(incident.getRequester().getId(), incident.getRequester().getName(),
                 incident.getRequester().getEmail(), incident.getRequester().getTypeUser());
 
-        this.attendant = new UserDto(incident.getAttendant().getId(),incident.getAttendant().getName(),
-                incident.getAttendant().getEmail(), incident.getAttendant().getTypeUser());
+        if (incident.getAttendant() != null){
+            this.attendant = new UserDto(incident.getAttendant().getId(),incident.getAttendant().getName(),
+                    incident.getAttendant().getEmail(), incident.getAttendant().getTypeUser());
+        }
 
         this.description = incident.getDescription();
         this.openingDate = incident.getOpeningDate();
         this.status = incident.getStatus();
         this.priority = incident.getPriority();
+        this.closingDate = incident.getClosingDate();
     }
 
     public static Page<IncidentDto> convertToDto(Page<Incident> incidents) {

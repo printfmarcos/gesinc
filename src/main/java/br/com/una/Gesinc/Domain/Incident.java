@@ -3,12 +3,10 @@ package br.com.una.Gesinc.Domain;
 import br.com.una.Gesinc.Enum.Priority;
 import br.com.una.Gesinc.Enum.Status;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
@@ -38,6 +36,9 @@ public class Incident {
     private LocalDateTime closingDate;
 
     @Column
+    private LocalDateTime updatedAt;
+
+    @Column
     @Enumerated(EnumType.STRING)
     private Status status;
 
@@ -45,9 +46,8 @@ public class Incident {
     @Enumerated(EnumType.STRING)
     private Priority priority;
 
-    public Incident(User requester, User attendant, String description, LocalDateTime openingDate, Status status, Priority priority) {
+    public Incident(User requester, String description, LocalDateTime openingDate, Status status, Priority priority) {
         this.requester = requester;
-        this.attendant = attendant;
         this.description = description;
         this.openingDate = openingDate;
         this.status = status;

@@ -7,6 +7,7 @@ import br.com.una.Gesinc.Enum.Status;
 import br.com.una.Gesinc.Repository.UserRepository;
 import lombok.Getter;
 import lombok.Setter;
+
 import java.time.LocalDateTime;
 
 @Getter
@@ -22,15 +23,21 @@ public class IncidentForm {
     private Priority priority;
 
     public Incident convertToEntity(UserRepository userRepository){
-
         User requester = userRepository.getById(this.requester);
+
+        return new Incident(requester,this.description, LocalDateTime.now(), Status.OPENED, this.priority);
+    }
+
+    public Incident update(Incident incident, UserRepository userRepository){
+
         User attendant = userRepository.getById(this.attendant);
 
-        System.out.println(requester.getName());
-        System.out.println(attendant.getName());
+        incident.setDescription(this.description);
+        incident.setPriority(this.priority);
+        incident.setStatus(Status.INPROGRESS);
+        incident.setAttendant(attendant);
+        incident.setUpdatedAt(LocalDateTime.now());
 
-        System.out.println("--------------- dados dos usuarios recuperados corretamete------------");
-
-        return new Incident(requester,attendant,this.description, LocalDateTime.now(), Status.OPENED, this.priority);
+        return incident;
     }
 }
