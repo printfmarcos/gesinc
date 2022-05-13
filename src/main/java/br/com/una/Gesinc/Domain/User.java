@@ -1,6 +1,7 @@
 package br.com.una.Gesinc.Domain;
 
 import br.com.una.Gesinc.Enum.TypeUser;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -9,7 +10,8 @@ import java.io.Serializable;
 @Data
 @Entity
 @Table(name="TB_USER")
-public class User implements Serializable {
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+public class User{
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -17,6 +19,9 @@ public class User implements Serializable {
 
     @Column
     private String name;
+
+    @Column
+    private String email;
 
     @Column
     private String password;

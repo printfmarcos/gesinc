@@ -11,14 +11,18 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode
 public class UserDto {
 
-    private long id;
+    private Long id;
 
-    @NotNull
     private String name;
 
-    @NotNull
-    private String password;
+    private String email;
 
-    @NotNull
     private TypeUser typeUser;
+
+    public UserDto(Long id, String name, String email, TypeUser typeUser) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.typeUser = typeUser;
+    }
 }

@@ -4,6 +4,7 @@ import br.com.una.Gesinc.Domain.Incident;
 import br.com.una.Gesinc.Domain.User;
 import br.com.una.Gesinc.Enum.Priority;
 import br.com.una.Gesinc.Enum.Status;
+import br.com.una.Gesinc.Repository.UserRepository;
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,13 +18,11 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode
 public class IncidentDto {
 
-    private long id;
+    private Long id;
 
-    @NotNull
-    private User requester;
+    private UserDto requester;
 
-    @NotNull
-    private User attendant;
+    private UserDto attendant;
 
     private String description;
 
@@ -33,21 +32,24 @@ public class IncidentDto {
 
     private Status status;
 
-    @NotNull
     private Priority priority;
 
     public IncidentDto(Incident incident) {
         this.id = incident.getId();
-        this.requester = incident.getRequester();
-        this.attendant = incident.getAttendant();
+
+        this.requester = new UserDto(incident.getRequester().getId(), incident.getRequester().getName(),
+                incident.getRequester().getEmail(), incident.getRequester().getTypeUser());
+
+        this.attendant = new UserDto(incident.getAttendant().getId(),incident.getAttendant().getName(),
+                incident.getAttendant().getEmail(), incident.getAttendant().getTypeUser());
+
         this.description = incident.getDescription();
         this.openingDate = incident.getOpeningDate();
-        this.closingDate = incident.getClosingDate();
         this.status = incident.getStatus();
         this.priority = incident.getPriority();
     }
 
-    public static Page<IncidentDto> convert(Page<Incident> incidents) {
+    public static Page<IncidentDto> convertToDto(Page<Incident> incidents) {
         return incidents.map(IncidentDto::new);
     }
 }
