@@ -1,5 +1,5 @@
 package br.com.una.Gesinc.Enum;
 
-public enum TypeUser {
+public enum UserType {
     REQUESTER, ATTENDANT, ADM
 }

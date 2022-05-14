@@ -1,13 +1,11 @@
 package br.com.una.Gesinc.Controller;
 
 import br.com.una.Gesinc.Domain.Incident;
-import br.com.una.Gesinc.Domain.User;
 import br.com.una.Gesinc.Dto.IncidentDto;
-import br.com.una.Gesinc.Enum.TypeUser;
+import br.com.una.Gesinc.Enum.UserType;
 import br.com.una.Gesinc.Form.IncidentForm;
 import br.com.una.Gesinc.Repository.IncidentRepository;
 import br.com.una.Gesinc.Repository.UserRepository;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -86,23 +84,45 @@ public class IncidentController {
     @CacheEvict(value = "incidentList", allEntries = true)
     public ResponseEntity<IncidentDto> update (@RequestBody IncidentForm incidentForm, @PathVariable Long id){
 
-        Optional<Incident> incidentOptional = incidentRepository.findById(id);
+        Optional<Incident> optionalIncident = incidentRepository.findById(id);
 
-        if (incidentOptional.isPresent()) {
+        if (optionalIncident.isPresent()) {
 
-            Incident incident = incidentForm.update(incidentOptional.get(), userRepository);
+            Incident incident = incidentForm.update(optionalIncident.get(), userRepository);
             incidentRepository.save(incident);
-            return ResponseEntity.ok(new IncidentDto(incidentOptional.get()));
+            return ResponseEntity.ok(new IncidentDto(optionalIncident.get()));
         }
         return ResponseEntity.notFound().build();
     }
 
+    @PutMapping("/close/{userId}/{incidentId}")
+    @Transactional
+    @CacheEvict(value = "incidentList", allEntries = true)
+    public ResponseEntity<?> closeIncident (@PathVariable Long userId, @PathVariable Long incidentId){
+
+        //somente ADM ou ATTENDANT podem fechar um incidente
+        Boolean isRequester = userRepository.getById(userId).getUserType() == UserType.REQUESTER;
+        Optional<Incident> optionalIncident = incidentRepository.findById(incidentId);
+
+        if(isRequester == true){
+            return ResponseEntity.badRequest().body("Only ADM or ATTENDANT can close an incident");
+        }
+        if (optionalIncident.isPresent()) {
+            optionalIncident.get().closeIncident();
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    /*
+    * verifica o usuario solicitando a exclusao do incidente, se este tem a permissao ADM
+    * */
     @DeleteMapping("/{userId}/{incidentId}")
     @Transactional
     @CacheEvict(value = "incidentList", allEntries = true)
     public ResponseEntity<?> delete (@PathVariable Long userId, @PathVariable Long incidentId){
 
-        Boolean isAdm = userRepository.getById(userId).getTypeUser() == TypeUser.ADM;
+        Boolean isAdm = userRepository.getById(userId).getUserType() == UserType.ADM;
         Optional<Incident> optionalIncident = incidentRepository.findById(incidentId);
 
         if(isAdm == false){

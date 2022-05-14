@@ -1,11 +1,10 @@
 package br.com.una.Gesinc.Domain;
 
-import br.com.una.Gesinc.Enum.TypeUser;
+import br.com.una.Gesinc.Enum.UserType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.io.Serializable;
 
 @Data
 @Entity
@@ -28,5 +27,5 @@ public class User{
 
     @Column
     @Enumerated(EnumType.STRING)
-    private TypeUser typeUser;
+    private UserType userType;
 }

@@ -1,5 +1,6 @@
 package br.com.una.Gesinc.Domain;
 
+import br.com.una.Gesinc.Enum.IncidentType;
 import br.com.una.Gesinc.Enum.Priority;
 import br.com.una.Gesinc.Enum.Status;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -27,6 +28,10 @@ public class Incident {
     private User attendant;
 
     @Column
+    @Enumerated(EnumType.STRING)
+    private IncidentType incidentType;
+
+    @Column
     private String description;
 
     @Column
@@ -46,11 +51,17 @@ public class Incident {
     @Enumerated(EnumType.STRING)
     private Priority priority;
 
-    public Incident(User requester, String description, LocalDateTime openingDate, Status status, Priority priority) {
+    public Incident(User requester, IncidentType incidentType, String description, LocalDateTime openingDate, Status status, Priority priority) {
         this.requester = requester;
+        this.incidentType = incidentType;
         this.description = description;
         this.openingDate = openingDate;
         this.status = status;
         this.priority = priority;
+    }
+
+    public void closeIncident() {
+        this.closingDate = LocalDateTime.now();
+        this.status = Status.CONCLUDED;
     }
 }

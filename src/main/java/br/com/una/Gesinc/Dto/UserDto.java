@@ -1,7 +1,6 @@
 package br.com.una.Gesinc.Dto;
 
-import br.com.una.Gesinc.Enum.TypeUser;
-import com.sun.istack.NotNull;
+import br.com.una.Gesinc.Enum.UserType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -17,12 +16,12 @@ public class UserDto {
 
     private String email;
 
-    private TypeUser typeUser;
+    private UserType userType;
 
-    public UserDto(Long id, String name, String email, TypeUser typeUser) {
+    public UserDto(Long id, String name, String email, UserType userType) {
         this.id = id;
         this.name = name;
         this.email = email;
-        this.typeUser = typeUser;
+        this.userType = userType;
     }
 }
