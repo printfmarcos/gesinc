@@ -9,6 +9,7 @@ import lombok.EqualsAndHashCode;
 import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @EqualsAndHashCode
@@ -32,6 +33,8 @@ public class IncidentDto {
 
     private Priority priority;
 
+    private List<ActionDto> actionList;
+
     public IncidentDto(Incident incident) {
         this.id = incident.getId();
 
@@ -48,6 +51,25 @@ public class IncidentDto {
         this.status = incident.getStatus();
         this.priority = incident.getPriority();
         this.closingDate = incident.getClosingDate();
+    }
+
+    public IncidentDto(Incident incident, List<ActionDto> actionList) {
+        this.id = incident.getId();
+
+        this.requester = new UserDto(incident.getRequester().getId(), incident.getRequester().getName(),
+                incident.getRequester().getEmail(), incident.getRequester().getUserType());
+
+        if (incident.getAttendant() != null){
+            this.attendant = new UserDto(incident.getAttendant().getId(),incident.getAttendant().getName(),
+                    incident.getAttendant().getEmail(), incident.getAttendant().getUserType());
+        }
+        this.incidentType = incident.getIncidentType();
+        this.description = incident.getDescription();
+        this.openingDate = incident.getOpeningDate();
+        this.status = incident.getStatus();
+        this.priority = incident.getPriority();
+        this.closingDate = incident.getClosingDate();
+        this.actionList = actionList;
     }
 
     public static Page<IncidentDto> convertToDto(Page<Incident> incidents) {

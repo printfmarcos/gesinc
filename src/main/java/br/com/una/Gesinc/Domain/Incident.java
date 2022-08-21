@@ -64,4 +64,5 @@ public class Incident {
         this.closingDate = LocalDateTime.now();
         this.status = Status.CONCLUDED;
     }
+
 }

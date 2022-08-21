@@ -26,7 +26,6 @@ public class UserForm {
 
     private UserType userType;
 
-    // transformar o form em entidade
     public User convertToEntity() {
         return new User(this.name, this.email, this.password, this.userType);
     }

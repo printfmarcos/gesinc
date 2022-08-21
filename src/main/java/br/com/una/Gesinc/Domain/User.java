@@ -3,12 +3,14 @@ package br.com.una.Gesinc.Domain;
 import br.com.una.Gesinc.Enum.UserType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Data
 @Entity
 @Table(name="TB_USER")
+@NoArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class User{
 
@@ -28,4 +30,12 @@ public class User{
     @Column
     @Enumerated(EnumType.STRING)
     private UserType userType;
+
+
+    public User(String name, String email, String password, UserType userType) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.userType = userType;
+    }
 }

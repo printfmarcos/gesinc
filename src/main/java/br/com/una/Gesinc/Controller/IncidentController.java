@@ -1,9 +1,14 @@
 package br.com.una.Gesinc.Controller;
 
+import br.com.una.Gesinc.Domain.Action;
 import br.com.una.Gesinc.Domain.Incident;
+import br.com.una.Gesinc.Domain.User;
+import br.com.una.Gesinc.Dto.ActionDto;
 import br.com.una.Gesinc.Dto.IncidentDto;
+import br.com.una.Gesinc.Enum.Status;
 import br.com.una.Gesinc.Enum.UserType;
 import br.com.una.Gesinc.Form.IncidentForm;
+import br.com.una.Gesinc.Repository.ActionRepository;
 import br.com.una.Gesinc.Repository.IncidentRepository;
 import br.com.una.Gesinc.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +24,10 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.transaction.Transactional;
 import java.net.URI;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/incident")
@@ -28,13 +36,20 @@ public class IncidentController {
     @Autowired
     private IncidentRepository incidentRepository;
 
+
     @Autowired
     private UserRepository userRepository;
 
-    /*
-    * Sem parametro : Retorna a lista de todos os incidentes cadastrados
-    * Com parametro:  Retorna a lista de todos os incidentes abertos por este solicitante
-    * */
+    @Autowired
+    private ActionRepository actionRepository;
+
+    /**
+     * Sem parametro : Retorna a lista de todos os incidentes cadastrados
+     * Com parametro:  Retorna a lista de todos os incidentes abertos por este solicitante
+     * @param userId
+     * @param pagination
+     * @return
+     */
     @GetMapping
     @Cacheable(value = "incidentList")
     public Page<IncidentDto> list(@RequestParam(required = false) Long userId,
@@ -50,8 +65,12 @@ public class IncidentController {
         return IncidentDto.convertToDto(incidents);
     }
 
-    /*
-    * Cadastro de um novo incidente*/
+    /**
+     * Cadastro de um novo incidente
+     * @param incidentForm
+     * @param uriBuilder
+     * @return
+     */
     @PostMapping
     @Transactional
     @CacheEvict(value = "incidentList", allEntries = true)
@@ -65,29 +84,44 @@ public class IncidentController {
 
     }
 
-    /*
-    * Retorna um unico incidente de acordo com o Id passado*/
+    /**
+     * Retorna um unico incidente de acordo com o Id passado
+     * @param id
+     * @return
+     */
     @GetMapping("/{id}")
-    public ResponseEntity<IncidentDto> detalhar(@PathVariable Long id) {
+    public ResponseEntity<IncidentDto> detail(@PathVariable Long id) {
         Optional<Incident> incidentOptional = incidentRepository.findById(id);
 
         if (incidentOptional.isPresent()) {
+            List<Action> actionList = this.actionRepository.findByIncidentId(incidentOptional.get().getId());
+            if(actionList != null){
+                return ResponseEntity.ok(new IncidentDto(
+                        incidentOptional.get(), actionList.stream().map(ActionDto::new).collect(Collectors.toList())));
+            }
             return ResponseEntity.ok(new IncidentDto(incidentOptional.get()));
         }
         return ResponseEntity.notFound().build();
     }
 
-    /*
-    * Atualiza o incidente do Id passado por parametro*/
+    /**
+     * Atualiza o incidente do Id passado por parametro
+     * @param incidentForm
+     * @param id
+     * @return
+     */
     @PutMapping("/{id}")
     @Transactional
     @CacheEvict(value = "incidentList", allEntries = true)
-    public ResponseEntity<IncidentDto> update (@RequestBody IncidentForm incidentForm, @PathVariable Long id){
+    public ResponseEntity<?> update (@RequestBody IncidentForm incidentForm, @PathVariable Long id){
 
         Optional<Incident> optionalIncident = incidentRepository.findById(id);
 
         if (optionalIncident.isPresent()) {
 
+            if(optionalIncident.get().getStatus() != Status.OPENED){
+                return ResponseEntity.badRequest().body("Only OPENED incidents can be updated");
+            }
             Incident incident = incidentForm.update(optionalIncident.get(), userRepository);
             incidentRepository.save(incident);
             return ResponseEntity.ok(new IncidentDto(optionalIncident.get()));
@@ -95,6 +129,12 @@ public class IncidentController {
         return ResponseEntity.notFound().build();
     }
 
+    /**
+     * fechando um incident, somente ADM ou Attendant podem fazer isso
+     * @param userId
+     * @param incidentId
+     * @return
+     */
     @PutMapping("/close/{userId}/{incidentId}")
     @Transactional
     @CacheEvict(value = "incidentList", allEntries = true)
@@ -104,7 +144,7 @@ public class IncidentController {
         Boolean isRequester = userRepository.getById(userId).getUserType() == UserType.REQUESTER;
         Optional<Incident> optionalIncident = incidentRepository.findById(incidentId);
 
-        if(isRequester == true){
+        if(isRequester){
             return ResponseEntity.badRequest().body("Only ADM or ATTENDANT can close an incident");
         }
         if (optionalIncident.isPresent()) {
@@ -114,9 +154,12 @@ public class IncidentController {
         return ResponseEntity.notFound().build();
     }
 
-    /*
-    * verifica o usuario solicitando a exclusao do incidente, se este tem a permissao ADM
-    * */
+    /**
+     * verifica o usuario solicitando a exclusao do incidente, se este tem a permissao ADM
+     * @param userId
+     * @param incidentId
+     * @return
+     */
     @DeleteMapping("/{userId}/{incidentId}")
     @Transactional
     @CacheEvict(value = "incidentList", allEntries = true)
@@ -125,12 +168,45 @@ public class IncidentController {
         Boolean isAdm = userRepository.getById(userId).getUserType() == UserType.ADM;
         Optional<Incident> optionalIncident = incidentRepository.findById(incidentId);
 
-        if(isAdm == false){
+        if(!isAdm){
             return ResponseEntity.badRequest().body("Only ADM can delete an incident");
         }
         if (optionalIncident.isPresent()) {
             incidentRepository.deleteById(incidentId);
             return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    /**
+     * adiciona uma acao ao incidente
+     * @param actionDto
+     * @param incidentId
+     * @return
+     */
+    @PutMapping("/action/{incidentId}")
+    @Transactional
+    public ResponseEntity<?> addAction (@RequestBody ActionDto actionDto, @PathVariable Long incidentId){
+        Optional<Incident> optionalIncident = incidentRepository.findById(incidentId);
+
+        if (optionalIncident.isPresent()){
+            Incident incident = optionalIncident.get();
+
+            User user = userRepository.findByName(actionDto.getUserName());
+
+            Action action = new Action(actionDto.getDescription(), incident, LocalDateTime.now(), user, actionDto.getSolution());
+
+            actionRepository.save(action);
+
+            if(!action.getSolution()){
+                incident.setStatus(Status.INPROGRESS);
+            }
+            else{
+                incident.setStatus(Status.CONCLUDED);
+                incident.closeIncident();
+            }
+            incidentRepository.save(incident);
+            return ResponseEntity.ok(new IncidentDto(incident));
         }
         return ResponseEntity.notFound().build();
     }
