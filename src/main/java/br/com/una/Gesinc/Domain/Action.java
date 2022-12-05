@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
+@Table(name = "tb_action")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Action {
 

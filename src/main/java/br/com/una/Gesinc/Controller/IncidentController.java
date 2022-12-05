@@ -6,7 +6,6 @@ import br.com.una.Gesinc.Domain.User;
 import br.com.una.Gesinc.Dto.ActionDto;
 import br.com.una.Gesinc.Dto.IncidentDto;
 import br.com.una.Gesinc.Enum.Status;
-import br.com.una.Gesinc.Enum.UserType;
 import br.com.una.Gesinc.Form.IncidentForm;
 import br.com.una.Gesinc.Repository.ActionRepository;
 import br.com.una.Gesinc.Repository.IncidentRepository;
@@ -22,7 +21,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.transaction.Transactional;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -72,7 +70,6 @@ public class IncidentController {
      * @return
      */
     @PostMapping
-    @Transactional
     @CacheEvict(value = "incidentList", allEntries = true)
     public ResponseEntity<IncidentDto> register (@RequestBody IncidentForm incidentForm, UriComponentsBuilder uriBuilder){
 
@@ -111,7 +108,6 @@ public class IncidentController {
      * @return
      */
     @PutMapping("/{id}")
-    @Transactional
     @CacheEvict(value = "incidentList", allEntries = true)
     public ResponseEntity<?> update (@RequestBody IncidentForm incidentForm, @PathVariable Long id){
 
@@ -136,17 +132,16 @@ public class IncidentController {
      * @return
      */
     @PutMapping("/close/{userId}/{incidentId}")
-    @Transactional
     @CacheEvict(value = "incidentList", allEntries = true)
     public ResponseEntity<?> closeIncident (@PathVariable Long userId, @PathVariable Long incidentId){
 
         //somente ADM ou ATTENDANT podem fechar um incidente
-        Boolean isRequester = userRepository.getById(userId).getUserType() == UserType.REQUESTER;
+//        Boolean isRequester = userRepository.getById(userId).getUserType() == UserType.REQUESTER;
         Optional<Incident> optionalIncident = incidentRepository.findById(incidentId);
-
-        if(isRequester){
-            return ResponseEntity.badRequest().body("Only ADM or ATTENDANT can close an incident");
-        }
+//
+//        if(isRequester){
+//            return ResponseEntity.badRequest().body("Only ADM or ATTENDANT can close an incident");
+//        }
         if (optionalIncident.isPresent()) {
             optionalIncident.get().closeIncident();
             return ResponseEntity.ok().build();
@@ -156,21 +151,14 @@ public class IncidentController {
 
     /**
      * verifica o usuario solicitando a exclusao do incidente, se este tem a permissao ADM
-     * @param userId
      * @param incidentId
      * @return
      */
-    @DeleteMapping("/{userId}/{incidentId}")
-    @Transactional
+    @DeleteMapping("/{incidentId}")
     @CacheEvict(value = "incidentList", allEntries = true)
-    public ResponseEntity<?> delete (@PathVariable Long userId, @PathVariable Long incidentId){
-
-        Boolean isAdm = userRepository.getById(userId).getUserType() == UserType.ADM;
+    public ResponseEntity<?> delete (@PathVariable Long incidentId){
         Optional<Incident> optionalIncident = incidentRepository.findById(incidentId);
 
-        if(!isAdm){
-            return ResponseEntity.badRequest().body("Only ADM can delete an incident");
-        }
         if (optionalIncident.isPresent()) {
             incidentRepository.deleteById(incidentId);
             return ResponseEntity.ok().build();
@@ -185,7 +173,6 @@ public class IncidentController {
      * @return
      */
     @PutMapping("/action/{incidentId}")
-    @Transactional
     public ResponseEntity<?> addAction (@RequestBody ActionDto actionDto, @PathVariable Long incidentId){
         Optional<Incident> optionalIncident = incidentRepository.findById(incidentId);
 

@@ -39,11 +39,11 @@ public class IncidentDto {
         this.id = incident.getId();
 
         this.requester = new UserDto(incident.getRequester().getId(), incident.getRequester().getName(),
-                incident.getRequester().getEmail(), incident.getRequester().getUserType());
+                incident.getRequester().getEmail());
 
         if (incident.getAttendant() != null){
             this.attendant = new UserDto(incident.getAttendant().getId(),incident.getAttendant().getName(),
-                    incident.getAttendant().getEmail(), incident.getAttendant().getUserType());
+                    incident.getAttendant().getEmail());
         }
         this.incidentType = incident.getIncidentType();
         this.description = incident.getDescription();
@@ -57,11 +57,11 @@ public class IncidentDto {
         this.id = incident.getId();
 
         this.requester = new UserDto(incident.getRequester().getId(), incident.getRequester().getName(),
-                incident.getRequester().getEmail(), incident.getRequester().getUserType());
+                incident.getRequester().getEmail());
 
         if (incident.getAttendant() != null){
             this.attendant = new UserDto(incident.getAttendant().getId(),incident.getAttendant().getName(),
-                    incident.getAttendant().getEmail(), incident.getAttendant().getUserType());
+                    incident.getAttendant().getEmail());
         }
         this.incidentType = incident.getIncidentType();
         this.description = incident.getDescription();

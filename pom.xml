@@ -12,7 +12,7 @@
 	<artifactId>Gesinc</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Gesinc</name>
-	<description>Projeto de gestão de incidentes desenvolvido por alunos da Una</description>
+	<description>Rest API de uma aplicação para gestão de incidentes.</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>

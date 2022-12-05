@@ -5,6 +5,7 @@ import br.com.una.Gesinc.Enum.UserType;
 import br.com.una.Gesinc.Repository.UserRepository;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
@@ -24,19 +25,15 @@ public class UserForm {
     @NotBlank(message = "{not.blank.password}")
     private String password;
 
-    private UserType userType;
-
     public User convertToEntity() {
-        return new User(this.name, this.email, this.password, this.userType);
+        return new User(this.name, this.email, new BCryptPasswordEncoder().encode(this.password));
     }
-
 
     public User update(User user){
 
         user.setName(this.name);
         user.setEmail(this.email);
-        user.setPassword(this.password);
-        user.setUserType(this.userType);
+        user.setPassword(new BCryptPasswordEncoder().encode(this.password));
         return user;
     }
 }

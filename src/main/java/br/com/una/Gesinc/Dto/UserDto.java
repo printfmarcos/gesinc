@@ -20,19 +20,15 @@ public class UserDto {
 
     private String email;
 
-    private UserType userType;
-
-    public UserDto(Long id, String name, String email, UserType userType) { //constructor
+    public UserDto(Long id, String name, String email) { //constructor
         this.id = id;
         this.name = name;
         this.email = email;
-        this.userType = userType;
     }
 
     public UserDto(User user) { // constructor de conversao
         this.id = user.getId();
         this.email = user.getEmail();
-        this.userType = user.getUserType();
         this.name = user.getName();
     }
 
