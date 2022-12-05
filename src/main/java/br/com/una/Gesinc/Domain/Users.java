@@ -1,8 +1,7 @@
 package br.com.una.Gesinc.Domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -11,12 +10,14 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name="TB_USER")
 @NoArgsConstructor
+@AllArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class User implements UserDetails, Serializable {
+public class Users implements UserDetails, Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -41,7 +42,7 @@ public class User implements UserDetails, Serializable {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private List<Roles> roles;
 
-    public User(String name, String email, String password) {
+    public Users(String name, String email, String password) {
         this.name = name;
         this.email = email;
         this.password = password;

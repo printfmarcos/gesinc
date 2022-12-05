@@ -29,7 +29,7 @@ public class ActionDto {
         this.id = action.getId();
         this.description = action.getDescription();
         this.actionDate = action.getActionDate();
-        this.userName = action.getUser().getName();
+        this.userName = action.getUsers().getName();
         this.solution = action.getSolution();
     }
 }

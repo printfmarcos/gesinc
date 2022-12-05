@@ -24,15 +24,15 @@ public class Action {
     private LocalDateTime actionDate;
 
     @ManyToOne
-    private User user;
+    private Users users;
 
     private Boolean solution;
 
-    public Action(String description, Incident incident, LocalDateTime actionDate, User user, Boolean solution) {
+    public Action(String description, Incident incident, LocalDateTime actionDate, Users users, Boolean solution) {
         this.description = description;
         this.incident = incident;
         this.actionDate = actionDate;
-        this.user = user;
+        this.users = users;
         this.solution = solution;
     }
 

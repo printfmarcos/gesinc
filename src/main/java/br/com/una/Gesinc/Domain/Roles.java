@@ -6,12 +6,14 @@ import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "tb_role")
 @Getter
 @Setter
-public class Roles implements GrantedAuthority {
+public class Roles implements GrantedAuthority, Serializable {
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

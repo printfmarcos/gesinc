@@ -1,12 +1,10 @@
 package br.com.una.Gesinc.Dto;
 
-import br.com.una.Gesinc.Domain.User;
-import br.com.una.Gesinc.Enum.UserType;
+import br.com.una.Gesinc.Domain.Users;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,13 +24,13 @@ public class UserDto {
         this.email = email;
     }
 
-    public UserDto(User user) { // constructor de conversao
-        this.id = user.getId();
-        this.email = user.getEmail();
-        this.name = user.getName();
+    public UserDto(Users users) { // constructor de conversao
+        this.id = users.getId();
+        this.email = users.getEmail();
+        this.name = users.getName();
     }
 
-    public static List<UserDto> convertToDTO(List<User> users) {
+    public static List<UserDto> convertToDTO(List<Users> users) {
         //List<User> users = new ArrayList<>();
         //List<UserDto> usersDto = new ArrayList<>();
         //

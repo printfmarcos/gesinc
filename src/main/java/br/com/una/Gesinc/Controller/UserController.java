@@ -1,10 +1,7 @@
 package br.com.una.Gesinc.Controller;
 
-import br.com.una.Gesinc.Domain.User;
+import br.com.una.Gesinc.Domain.Users;
 import br.com.una.Gesinc.Dto.UserDto;
-import br.com.una.Gesinc.Enum.IncidentType;
-import br.com.una.Gesinc.Enum.Status;
-import br.com.una.Gesinc.Enum.UserType;
 import br.com.una.Gesinc.Form.UserForm;
 import br.com.una.Gesinc.Repository.IncidentRepository;
 import br.com.una.Gesinc.Repository.UserRepository;
@@ -36,36 +33,36 @@ public class UserController {
 
     @GetMapping("/{name}")
     public UserDto getUserByName(@PathVariable String name){
-        User teste = userRepository.findTop1ByName(name);
+        Users teste = userRepository.findTop1ByName(name);
         return new UserDto(teste);
     }
 
     @GetMapping("/email/{email}")
     public UserDto getUserByEmail(@PathVariable String email){
-        User teste = userRepository.findByEmail(email);
+        Users teste = userRepository.findByEmail(email);
         return new UserDto(teste);
     }
 
     @PostMapping()
     @Transactional
     public ResponseEntity<UserDto> saveUser(@RequestBody @Valid UserForm userForm, UriComponentsBuilder uriBuilder){
-        User user = userForm.convertToEntity();
-        userRepository.save(user);
+        Users users = userForm.convertToEntity();
+        userRepository.save(users);
 
-        URI uri = uriBuilder.path("/user/{id}").buildAndExpand(user.getId()).toUri();
-        return ResponseEntity.created(uri).body(new UserDto(user));
+        URI uri = uriBuilder.path("/user/{id}").buildAndExpand(users.getId()).toUri();
+        return ResponseEntity.created(uri).body(new UserDto(users));
     }
 
     @PutMapping("/{id}")
     @Transactional
     public ResponseEntity<UserDto> update(@RequestBody @Valid UserForm userForm, @PathVariable Long id){
 
-        Optional<User> userOptional = userRepository.findById(id);
+        Optional<Users> userOptional = userRepository.findById(id);
 
         if (userOptional.isPresent()){
-            User user = userForm.update(userOptional.get());
-            userRepository.save(user);
-            return ResponseEntity.ok(new UserDto(user));
+            Users users = userForm.update(userOptional.get());
+            userRepository.save(users);
+            return ResponseEntity.ok(new UserDto(users));
         }
         return  ResponseEntity.notFound().build();
     }
@@ -78,7 +75,7 @@ public class UserController {
     public ResponseEntity<?> deleteUser (@PathVariable Long id, Long incidentId){
 
 //        Boolean haveIncidents = incidentRepository.getById(incidentId).getStatus() == Status.CONCLUDED;
-        Optional<User> userOptional = userRepository.findById(id);
+        Optional<Users> userOptional = userRepository.findById(id);
 //        if (haveIncidents == true) {
 //            return ResponseEntity.badRequest().body("You have incidents open on your profile");
 //        }

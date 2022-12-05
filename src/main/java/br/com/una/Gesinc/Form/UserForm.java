@@ -1,13 +1,10 @@
 package br.com.una.Gesinc.Form;
 
-import br.com.una.Gesinc.Domain.User;
-import br.com.una.Gesinc.Enum.UserType;
-import br.com.una.Gesinc.Repository.UserRepository;
+import br.com.una.Gesinc.Domain.Users;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
@@ -25,15 +22,15 @@ public class UserForm {
     @NotBlank(message = "{not.blank.password}")
     private String password;
 
-    public User convertToEntity() {
-        return new User(this.name, this.email, new BCryptPasswordEncoder().encode(this.password));
+    public Users convertToEntity() {
+        return new Users(this.name, this.email, new BCryptPasswordEncoder().encode(this.password));
     }
 
-    public User update(User user){
+    public Users update(Users users){
 
-        user.setName(this.name);
-        user.setEmail(this.email);
-        user.setPassword(new BCryptPasswordEncoder().encode(this.password));
-        return user;
+        users.setName(this.name);
+        users.setEmail(this.email);
+        users.setPassword(new BCryptPasswordEncoder().encode(this.password));
+        return users;
     }
 }

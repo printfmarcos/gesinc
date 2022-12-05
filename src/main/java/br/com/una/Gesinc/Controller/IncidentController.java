@@ -2,7 +2,7 @@ package br.com.una.Gesinc.Controller;
 
 import br.com.una.Gesinc.Domain.Action;
 import br.com.una.Gesinc.Domain.Incident;
-import br.com.una.Gesinc.Domain.User;
+import br.com.una.Gesinc.Domain.Users;
 import br.com.una.Gesinc.Dto.ActionDto;
 import br.com.una.Gesinc.Dto.IncidentDto;
 import br.com.una.Gesinc.Enum.Status;
@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -69,6 +70,7 @@ public class IncidentController {
      * @param uriBuilder
      * @return
      */
+    @PreAuthorize("hasAnyRole('ROLE_ADM', 'ROLE_REQUESTER', 'ROLE_ATTENDANT')")
     @PostMapping
     @CacheEvict(value = "incidentList", allEntries = true)
     public ResponseEntity<IncidentDto> register (@RequestBody IncidentForm incidentForm, UriComponentsBuilder uriBuilder){
@@ -131,6 +133,7 @@ public class IncidentController {
      * @param incidentId
      * @return
      */
+    @PreAuthorize("hasAnyRole('ROLE_ADM', 'ROLE_ATTENDANT')")
     @PutMapping("/close/{userId}/{incidentId}")
     @CacheEvict(value = "incidentList", allEntries = true)
     public ResponseEntity<?> closeIncident (@PathVariable Long userId, @PathVariable Long incidentId){
@@ -154,6 +157,7 @@ public class IncidentController {
      * @param incidentId
      * @return
      */
+    @PreAuthorize("hasRole('ROLE_ADM')")
     @DeleteMapping("/{incidentId}")
     @CacheEvict(value = "incidentList", allEntries = true)
     public ResponseEntity<?> delete (@PathVariable Long incidentId){
@@ -179,9 +183,9 @@ public class IncidentController {
         if (optionalIncident.isPresent()){
             Incident incident = optionalIncident.get();
 
-            User user = userRepository.findByName(actionDto.getUserName());
+            Users users = userRepository.findByName(actionDto.getUserName());
 
-            Action action = new Action(actionDto.getDescription(), incident, LocalDateTime.now(), user, actionDto.getSolution());
+            Action action = new Action(actionDto.getDescription(), incident, LocalDateTime.now(), users, actionDto.getSolution());
 
             actionRepository.save(action);
 

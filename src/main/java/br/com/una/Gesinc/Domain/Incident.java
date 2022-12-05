@@ -22,10 +22,10 @@ public class Incident {
     private Long id;
 
     @ManyToOne
-    private User requester;
+    private Users requester;
 
     @ManyToOne
-    private User attendant;
+    private Users attendant;
 
     @Column
     @Enumerated(EnumType.STRING)
@@ -51,7 +51,7 @@ public class Incident {
     @Enumerated(EnumType.STRING)
     private Priority priority;
 
-    public Incident(User requester, IncidentType incidentType, String description, LocalDateTime openingDate, Status status, Priority priority) {
+    public Incident(Users requester, IncidentType incidentType, String description, LocalDateTime openingDate, Status status, Priority priority) {
         this.requester = requester;
         this.incidentType = incidentType;
         this.description = description;
