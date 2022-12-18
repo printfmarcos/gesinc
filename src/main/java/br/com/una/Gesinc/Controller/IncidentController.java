@@ -118,7 +118,7 @@ public class IncidentController {
         if (optionalIncident.isPresent()) {
 
             if(optionalIncident.get().getStatus() != Status.OPENED){
-                return ResponseEntity.badRequest().body("Only OPENED incidents can be updated");
+                return ResponseEntity.unprocessableEntity().body("Only OPENED incidents can be updated");
             }
             Incident incident = incidentForm.update(optionalIncident.get(), userRepository);
             incidentRepository.save(incident);
@@ -138,8 +138,6 @@ public class IncidentController {
     @CacheEvict(value = "incidentList", allEntries = true)
     public ResponseEntity<?> closeIncident (@PathVariable Long userId, @PathVariable Long incidentId){
 
-        //somente ADM ou ATTENDANT podem fechar um incidente
-//        Boolean isRequester = userRepository.getById(userId).getUserType() == UserType.REQUESTER;
         Optional<Incident> optionalIncident = incidentRepository.findById(incidentId);
 //
 //        if(isRequester){
@@ -183,9 +181,9 @@ public class IncidentController {
         if (optionalIncident.isPresent()){
             Incident incident = optionalIncident.get();
 
-            Users users = userRepository.findByName(actionDto.getUserName());
+            Optional<Users> optionalUser = userRepository.findById(actionDto.getUserId());
 
-            Action action = new Action(actionDto.getDescription(), incident, LocalDateTime.now(), users, actionDto.getSolution());
+            Action action = new Action(actionDto.getDescription(), incident, LocalDateTime.now(), optionalUser.get(), actionDto.getSolution());
 
             actionRepository.save(action);
 

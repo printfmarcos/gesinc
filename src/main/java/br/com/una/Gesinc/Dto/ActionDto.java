@@ -12,6 +12,7 @@ public class ActionDto {
     private String description;
     private LocalDateTime actionDate;
     private String userName;
+    private Long userId;
     private Boolean solution;
 
     public ActionDto(Long id, String description, LocalDateTime actionDate, String userName, Boolean solution) {

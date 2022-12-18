@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Entity
@@ -50,6 +52,9 @@ public class Incident {
     @Column
     @Enumerated(EnumType.STRING)
     private Priority priority;
+
+    @OneToMany
+    private List<Action> actions = new ArrayList<>();
 
     public Incident(Users requester, IncidentType incidentType, String description, LocalDateTime openingDate, Status status, Priority priority) {
         this.requester = requester;
