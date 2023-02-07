@@ -2,6 +2,7 @@ package br.com.una.Gesinc.Repository;
 
 import br.com.una.Gesinc.Domain.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Optional;
 
@@ -12,5 +13,7 @@ public interface UserRepository extends JpaRepository<Users, Long> {
 
     Users findByName(String name);
 
-    Optional<Users> findByUsername(String username);
+//    Optional<Users> findByUsername(String username);
+
+    UserDetails findByUsername(String username);
 }

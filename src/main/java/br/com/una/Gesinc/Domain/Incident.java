@@ -4,10 +4,10 @@ import br.com.una.Gesinc.Enum.IncidentType;
 import br.com.una.Gesinc.Enum.Priority;
 import br.com.una.Gesinc.Enum.Status;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;

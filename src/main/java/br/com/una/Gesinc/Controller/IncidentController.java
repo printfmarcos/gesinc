@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -139,10 +140,7 @@ public class IncidentController {
     public ResponseEntity<?> closeIncident (@PathVariable Long userId, @PathVariable Long incidentId){
 
         Optional<Incident> optionalIncident = incidentRepository.findById(incidentId);
-//
-//        if(isRequester){
-//            return ResponseEntity.badRequest().body("Only ADM or ATTENDANT can close an incident");
-//        }
+
         if (optionalIncident.isPresent()) {
             optionalIncident.get().closeIncident();
             return ResponseEntity.ok().build();
@@ -155,9 +153,8 @@ public class IncidentController {
      * @param incidentId
      * @return
      */
-    @PreAuthorize("hasRole('ROLE_ADM')")
+    @Secured("ROLE_ADM")
     @DeleteMapping("/{incidentId}")
-    @CacheEvict(value = "incidentList", allEntries = true)
     public ResponseEntity<?> delete (@PathVariable Long incidentId){
         Optional<Incident> optionalIncident = incidentRepository.findById(incidentId);
 

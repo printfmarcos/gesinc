@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 
 @Entity
@@ -25,6 +25,6 @@ public class Roles implements GrantedAuthority, Serializable {
 
     @Override
     public String getAuthority() {
-        return this.roleName.toString();
+        return this.roleName.name();
     }
 }
