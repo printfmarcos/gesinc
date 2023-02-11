@@ -33,14 +33,14 @@ public class UserController {
 
     @GetMapping("/{name}")
     public UserDto getUserByName(@PathVariable String name){
-        Users teste = userRepository.findTop1ByName(name);
-        return new UserDto(teste);
+        Users user = userRepository.findTop1ByName(name);
+        return new UserDto(user);
     }
 
     @GetMapping("/email/{email}")
     public UserDto getUserByEmail(@PathVariable String email){
-        Users teste = userRepository.findByEmail(email);
-        return new UserDto(teste);
+        Users user = userRepository.findByEmail(email);
+        return new UserDto(user);
     }
 
     @PostMapping()
