@@ -24,7 +24,7 @@ public class Action {
     private LocalDateTime actionDate;
 
     @ManyToOne
-    private Users users;
+    private Users user;
 
     private Boolean solution;
 
@@ -32,7 +32,7 @@ public class Action {
         this.description = description;
         this.incident = incident;
         this.actionDate = actionDate;
-        this.users = users;
+        this.user = users;
         this.solution = solution;
     }
 

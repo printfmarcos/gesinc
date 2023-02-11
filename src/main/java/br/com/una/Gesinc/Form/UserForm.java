@@ -16,6 +16,8 @@ public class UserForm {
 
     private String name;
 
+    private String username;
+
     @NotEmpty @NotNull @Email(message = "Não é um email valido")
     private String email;
 
@@ -23,12 +25,13 @@ public class UserForm {
     private String password;
 
     public Users convertToEntity() {
-        return new Users(this.name, this.email, new BCryptPasswordEncoder().encode(this.password));
+        return new Users(this.name, this.username, this.email, new BCryptPasswordEncoder().encode(this.password));
     }
 
     public Users update(Users users){
 
         users.setName(this.name);
+        users.setUsername(this.username);
         users.setEmail(this.email);
         users.setPassword(new BCryptPasswordEncoder().encode(this.password));
         return users;

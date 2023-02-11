@@ -21,7 +21,7 @@ public class Users implements UserDetails, Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column
@@ -44,6 +44,13 @@ public class Users implements UserDetails, Serializable {
 
     public Users(String name, String email, String encode) {
         this.name = name;
+        this.email = email;
+        this.password = encode;
+    }
+
+    public Users(String name, String username, String email, String encode) {
+        this.name = name;
+        this.username = username;
         this.email = email;
         this.password = encode;
     }
