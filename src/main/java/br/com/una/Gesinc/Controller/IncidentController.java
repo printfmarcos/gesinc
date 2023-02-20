@@ -52,7 +52,7 @@ public class IncidentController {
      */
     @GetMapping
     @Cacheable(value = "incidentList")
-    public Page<IncidentDto> list(@RequestParam(required = false) Long userId,
+    public ResponseEntity<Page<IncidentDto>> list(@RequestParam(required = false) Long userId,
           @PageableDefault(sort = "id", direction = Sort.Direction.ASC, page = 0, size = 10) Pageable pagination) {
 
         Page<Incident> incidents;
@@ -62,7 +62,8 @@ public class IncidentController {
         else{
             incidents = incidentRepository.findByRequesterId(userId, pagination);
         }
-        return IncidentDto.convertToDto(incidents);
+        var response = IncidentDto.convertToDto(incidents);
+        return ResponseEntity.ok(response);
     }
 
     /**
