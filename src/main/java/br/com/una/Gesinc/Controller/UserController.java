@@ -1,9 +1,11 @@
 package br.com.una.Gesinc.Controller;
 
+import br.com.una.Gesinc.Domain.Roles;
 import br.com.una.Gesinc.Domain.Users;
 import br.com.una.Gesinc.Dto.UserDto;
 import br.com.una.Gesinc.Form.UserForm;
 import br.com.una.Gesinc.Repository.IncidentRepository;
+import br.com.una.Gesinc.Repository.RolesRepository;
 import br.com.una.Gesinc.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +28,9 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private RolesRepository rolesRepository;
+
     @GetMapping()
     public List<UserDto> getAllUser(){
         return UserDto.convertToDTO(userRepository.findAll());
@@ -45,12 +50,17 @@ public class UserController {
 
     @PostMapping()
     @Transactional
-    public ResponseEntity<UserDto> saveUser(@RequestBody @Valid UserForm userForm, UriComponentsBuilder uriBuilder){
-        Users users = userForm.convertToEntity();
-        userRepository.save(users);
+    public ResponseEntity saveUser(@RequestBody @Valid UserForm userForm, UriComponentsBuilder uriBuilder){
+        Optional<Roles> optionalRoles = rolesRepository.findById(1L);
+        if(optionalRoles.isPresent()){
+            Users users = userForm.convertToEntity();
+            users.getRoles().add(optionalRoles.get());
+            userRepository.save(users);
 
-        URI uri = uriBuilder.path("/user/{id}").buildAndExpand(users.getId()).toUri();
-        return ResponseEntity.created(uri).body(new UserDto(users));
+            URI uri = uriBuilder.path("/user/{id}").buildAndExpand(users.getId()).toUri();
+            return ResponseEntity.created(uri).body(new UserDto(users));
+        }
+        return ResponseEntity.unprocessableEntity().body("Role pradão não encontrada. Erro no banco!");
     }
 
     @PutMapping("/{id}")

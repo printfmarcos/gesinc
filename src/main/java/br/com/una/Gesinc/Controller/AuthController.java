@@ -32,7 +32,7 @@ public class AuthController {
         var authentication = manager.authenticate(authToken);
 
         var tokenJwt = tokenService.generateToken((Users) authentication.getPrincipal());
-        return ResponseEntity.ok(new LoginDto(tokenJwt));
+        return ResponseEntity.ok(new LoginDto(tokenJwt, (Users) authentication.getPrincipal()));
     }
 
 }

@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -40,7 +41,7 @@ public class Users implements UserDetails, Serializable {
     @JoinTable(name = "tb_users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private List<Roles> roles;
+    private List<Roles> roles = new ArrayList<>();
 
     public Users(String name, String email, String encode) {
         this.name = name;
