@@ -50,7 +50,7 @@ Para instalar o banco de dados PostgreSQl 14.7: https://www.enterprisedb.com/dow
 
 Se precisar de algo mais simples existem diversos vídeos rápidos que ajudam a instalar essas tecnologias.
 
-Clone do código fonte: Faça o clone da branch JwtSecurity, que é a última versão já com a implementação do login utilizando JWT.
+Clone do código fonte: Faça o clone da branch Master, que é a última versão já com a implementação do login utilizando JWT.
 
 Após instalar todas as ferramentas acima, e feito o clone da aplicação na sua máquina, já é possível rodar a aplicação.
 Com a ajuda de alguma IDE (Como IntelliJ ou Eclipse), faça o build da aplicação para resolver todas as dependências e em seguida já pode rodar.
