@@ -9,6 +9,7 @@ import br.com.una.Gesinc.Repository.RolesRepository;
 import br.com.una.Gesinc.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -92,6 +93,26 @@ public class UserController {
         if(userOptional.isPresent()){
             userRepository.deleteById(id);
             return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/roles")
+    public List<Roles> getAllRoles(){
+        return rolesRepository.findAll();
+    }
+
+    @PutMapping("roles/user/{userId}")
+    @PreAuthorize("hasAnyRole('ROLE_ADM')")
+    public ResponseEntity addRole (@PathVariable Long userId, @RequestBody List<Long> idList ){
+        Optional<Users> userOptional = userRepository.findById(userId);
+        if(userOptional.isPresent()){
+            userOptional.get().getRoles().clear();
+
+            List<Roles> allRoles = rolesRepository.findAllById(idList);
+            userOptional.get().setRoles(allRoles);
+            userRepository.save(userOptional.get());
+            return ResponseEntity.ok(new UserDto(userOptional.get()));
         }
         return ResponseEntity.notFound().build();
     }

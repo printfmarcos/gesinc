@@ -20,7 +20,7 @@ public class UserDto {
     private String email;
     private List<String> roles;
 
-    public UserDto(Long id, String name, String email) { //constructor
+    public UserDto(Long id, String name, String email) {
         this.id = id;
         this.name = name;
         this.email = email;
