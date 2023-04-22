@@ -32,14 +32,10 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/incident")
 public class IncidentController {
-
     @Autowired
     private IncidentRepository incidentRepository;
-
-
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private ActionRepository actionRepository;
 
