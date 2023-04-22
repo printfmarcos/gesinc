@@ -1,4 +1,4 @@
-# API Rest para cadastro de incidentes.
+# API Rest para cadastro e gestão de incidentes.
 
 ## 📖  Descrição
 
